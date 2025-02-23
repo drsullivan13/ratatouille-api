@@ -23,7 +23,9 @@ export const generateRecipes = async (dishType, preferences = {}) => {
       - Dietary information (vegetarian, vegan, gluten-free, etc.) (dietaryInfo)
       - Basic nutritional information per serving (nutritionalInfo)
       
-      Format as JSON with a 'recipes' array.`;
+      Format as JSON with a 'recipes' array.
+      The ingredients array will be returned with objects for each ingredient in the following format: { item, amount, unit }
+      `;
 
   try {
     const openai = new OpenAI({
