@@ -5,8 +5,9 @@ export const generateRecipes = async (dishType, preferences = {}) => {
   const dietaryRestrictions = preferences.dietary || []
   const servingSize = preferences.servings || 4
   const difficulty = preferences.difficulty || "any"
+  const recipeCount = preferences.recipeCount
 
-  const prompt = `Generate 3 unique recipes for ${dishType}.
+  const prompt = `Generate ${recipeCount} unique recipes for ${dishType}.
       Dietary restrictions: ${dietaryRestrictions.join(", ") || "none"}
       Serving size: ${servingSize} people
       Difficulty level: ${difficulty}
