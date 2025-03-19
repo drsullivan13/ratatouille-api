@@ -1,5 +1,5 @@
 import { Recipe } from "../models/Recipe.js"
-import { openai } from "./llms/openAi.js"
+import { sendPrompt } from "./llms/index.js"
 
 export const generateRecipes = async (dishType, preferences = {}) => {
   const dietaryRestrictions = preferences.dietary || []
@@ -31,22 +31,7 @@ Format the response as a JSON object with a "recipes" array containing ${recipeC
   try {
     console.log(`Starting recipe generation`)
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content:"You are a world-class professional chef with expertise in a wide range of global cuisines, adept at crafting detailed, accurate, and creative recipes tailored to specific requirements. Your goal is to generate recipes that are flavorful, practical, and appealing, while strictly adhering to the user’s dietary restrictions, serving size, difficulty preferences, and any specified pantry or fridge ingredients. If the user provides a list of ingredients they want to use, incorporate as many of those ingredients as possible into each recipe, ensuring they are central to the dish while supplementing with additional ingredients as needed. If no ingredients are provided, create recipes from scratch based on the other inputs. When generating multiple recipes, ensure each recipe is distinct in flavor profile, culinary style, and cultural inspiration to provide variety. Provide all measurements in imperial units (e.g., cups, teaspoons, ounces) with precise, realistic quantities suitable for cooking. Return all responses in valid JSON format with a 'recipes' array, designed for seamless integration into an API. Include error-free, consistent data for all requested fields, and avoid vague or impractical instructions.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      response_format: { type: "json_object" },
-    })
-
-    const generatedRecipes = JSON.parse(response.choices[0].message.content)
+    const generatedRecipes = await sendPrompt(prompt, 'openai')
 
     console.log(`Finished recipe generation: ${JSON.stringify(generatedRecipes)}`)
 
@@ -58,23 +43,6 @@ Format the response as a JSON object with a "recipes" array containing ${recipeC
   } catch (error) {
     console.error("Error generating recipes:", error)
     throw new Error("Failed to generate recipes")
-  }
-}
-
-const openAIGenerateRecipes = async (prompt) => {
-  try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-    })
-    
-    // Parse the response and convert to Recipe objects
-    const content = response.choices[0].message.content
-    return parseRecipesFromResponse(content)
-  } catch (error) {
-    console.error("Error generating recipes with OpenAI:", error)
-    throw error
   }
 }
 
