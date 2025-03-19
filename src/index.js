@@ -1,16 +1,13 @@
-import dotenv from 'dotenv'
-dotenv.config()
+import { validateEnv } from './config.js'
+if (!validateEnv()) {
+  process.exit(1)
+}
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import recipeRoutes from './routes/recipeRoutes.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { rateLimiter } from './middleware/rateLimiter.js'
-
-if (!process.env.OPENAI_API_KEY) {
-    console.error('OPENAI_API_KEY is not defined in environment variables');
-    process.exit(1);
-  }
 
 const app = express()
 const PORT = process.env.PORT || 3000

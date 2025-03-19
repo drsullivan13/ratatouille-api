@@ -14,9 +14,7 @@ export class Recipe {
     }
   
     calculateTotalTime() {
-      const prepMinutes = this.parseTime(this.prepTime)
-      const cookMinutes = this.parseTime(this.cookTime)
-      return prepMinutes + cookMinutes
+      return this.prepTime + this.cookTime
     }
   
     parseTime(timeString) {
