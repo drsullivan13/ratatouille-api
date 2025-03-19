@@ -1,7 +1,7 @@
 import { Recipe } from "../models/Recipe.js"
 import { sendPrompt } from "./llms/index.js"
 
-export const generateRecipes = async (dishType, preferences = {}) => {
+export const generateRecipes = async (dishType, preferences = {}, llmConfig = {}) => {
   const dietaryRestrictions = preferences.dietary || []
   const servingSize = preferences.servings || 4
   const difficulty = preferences.difficulty || "any"
@@ -16,7 +16,7 @@ export const generateRecipes = async (dishType, preferences = {}) => {
 
 For each recipe, include the following fields in a JSON object:
 - "title": A concise, appealing recipe name
-- "description": 2-3 sentences describing the dish’s origin, flavor profile, and why it’s enjoyable (mention any pantry ingredients used, if applicable)
+- "description": 2-3 sentences describing the dish's origin, flavor profile, and why it's enjoyable (mention any pantry ingredients used, if applicable)
 - "ingredients": An array of objects, each with { "item": string, "amount": number or fraction (e.g., 0.5, 1.25), "unit": string (e.g., "cup", "tsp", "oz") }; if pantry ingredients are provided, include as many as possible with appropriate quantities, supplemented by additional ingredients as needed
 - "steps": An array of detailed, step-by-step instructions (each step as a string, numbered implicitly by order); if pantry ingredients are used, highlight their use in the steps
 - "servings": Number of servings (must match ${servingSize})
@@ -29,11 +29,15 @@ For each recipe, include the following fields in a JSON object:
 Format the response as a JSON object with a "recipes" array containing ${recipeCount} recipe objects. If ${recipeCount} > 1, ensure each recipe varies significantly in flavor, taste, and culinary cuisine (e.g., Italian, Mexican, Indian), while still incorporating the pantry ingredients (if provided) across the recipes. Validate that all recipes comply with the specified dietary restrictions, serving size, and difficulty level. If pantry ingredients are provided, prioritize their use in the recipes; if none are provided, create recipes freely based on the other inputs.`
 
   try {
-    console.log(`Starting recipe generation`)
+    console.log(`Starting recipe generation using ${llmConfig.model || 'openai'} model`)
 
-    const generatedRecipes = await sendPrompt(prompt, 'openai')
+    // Use the model and API key from llmConfig, with fallbacks
+    const model = llmConfig.model || 'openai'
+    const apiKey = llmConfig.apiKey
 
-    console.log(`Finished recipe generation: ${JSON.stringify(generatedRecipes)}`)
+    const generatedRecipes = await sendPrompt(prompt, model, apiKey)
+
+    console.log(`Finished recipe generation with ${model} model`)
 
     return generatedRecipes.recipes.map((recipeData) => {
       const recipe = new Recipe(recipeData)
@@ -42,10 +46,6 @@ Format the response as a JSON object with a "recipes" array containing ${recipeC
     })
   } catch (error) {
     console.error("Error generating recipes:", error)
-    throw new Error("Failed to generate recipes")
+    throw new Error(`Failed to generate recipes: ${error.message}`)
   }
-}
-
-const parseRecipesFromResponse = () => {
-  
 }
