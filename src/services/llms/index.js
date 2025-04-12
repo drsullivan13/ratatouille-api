@@ -1,6 +1,6 @@
 import { sendOpenAiPrompt } from "./openAi.js"
 import { sendAnthropicPrompt } from "./anthropic.js"
-// import { sendGrokPrompt } from "./grok.js"
+import { sendGrokPrompt } from "./grok.js"
 // import { sendPerplexityPrompt } from "./perplexity.js"
 
 export const sendPrompt = async (prompt, model, apiKey) => {
@@ -20,6 +20,6 @@ export const sendPrompt = async (prompt, model, apiKey) => {
 const modelTypeToFunctionMap = {
   openai: sendOpenAiPrompt,
   anthropic: sendAnthropicPrompt,
-//   grok: sendGrokPrompt,
+  grok: sendGrokPrompt,
 //   perplexity: sendPerplexityPrompt
 }

@@ -15,8 +15,6 @@ export const sendAnthropicPrompt = async (prompt, apiKey) => {
     temperature: 0.7 // Adding temperature instead of response_format
   });
 
-  // The response structure in the current API has the content as an array of blocks
-  // We need to extract the text from the first content block
   // console.log(`Response: ${JSON.stringify(JSON.parse(response.content[0].text))}`)
   return JSON.parse(response.content[0].text);
 };
